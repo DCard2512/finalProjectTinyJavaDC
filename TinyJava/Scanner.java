@@ -1,5 +1,6 @@
 package TinyJava;
 
+
 public class Scanner {
     private String in;
     private int position = 0;
@@ -31,7 +32,6 @@ public class Scanner {
     public token next(){
         String input = "";
         char i = top();
-        boolean isDouble = false;
         incWhiteSpace();
         if(Character.isLetter(i)){
             while (Character.isLetterOrDigit(top())) {
@@ -59,7 +59,6 @@ public class Scanner {
             }
 
             if(top() == '.'){
-                isDouble = true;
                 input += inc();
                 while(Character.isDigit(top())){
                     input += inc();
@@ -72,11 +71,41 @@ public class Scanner {
             }
         }
 
+        input = "";
+        switch(inc()){
+            case '+':
+                return new token(GrammarToken.ADD, "+");
+            case '-':
+                return new token(GrammarToken.SUB, "+");
+            case '*':
+                return new token(GrammarToken.MULT, "*");
+            case '/':
+                return new token(GrammarToken.DIV, "/");
+            case '=':
+                if(top() == '='){
+                    inc();
+                    return new token(GrammarToken.EQUAL, "==");
+                }
+            case '!':
+                if (top() == '=') {
+                    inc();
+                    return new token(GrammarToken.NET, "!=");
+                }
+                break;
+            case '<':
+                if (top() == '=') {
+                    inc();
+                    return new token(GrammarToken.LTET, "<=");
+                }
+                return new token(GrammarToken.LT, "<");
+            case '>':
+                if (top() == '=') {
+                    inc();
+                    return new token(GrammarToken.GTET, ">=");
+                }
+                return new token(GrammarToken.GT, ">");
+        }
 
-        switch(top(){
-            
-        })
-        
-        
+        throw new RuntimeException("Not valid");
     }
 }

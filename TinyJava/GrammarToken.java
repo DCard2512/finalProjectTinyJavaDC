@@ -14,5 +14,5 @@ public enum GrammarToken {
     ET, NET, LT, GT, LTET, GTET,
 
     //Assignment/if Statements
-    EQUAL, IF
+    EQUAL, IF, ASSIGN
 }
