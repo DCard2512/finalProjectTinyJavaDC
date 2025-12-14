@@ -14,5 +14,11 @@ public enum GrammarToken {
     ET, NET, LT, GT, LTET, GTET,
 
     //Assignment/if Statements
-    EQUAL, IF, ASSIGN
+    EQUAL, IF, ASSIGN,
+
+
+    //Ignore
+    Comma, Semi, LP, RP, LB, RB, Indent,
+
+    ENDOFFILE
 }
