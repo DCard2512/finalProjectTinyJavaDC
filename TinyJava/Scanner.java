@@ -29,10 +29,53 @@ public class Scanner {
     }
 
     public token next(){
-        char input;
-
+        String input = "";
+        char i = top();
+        boolean isDouble = false;
         incWhiteSpace();
+        if(Character.isLetter(i)){
+            while (Character.isLetterOrDigit(top())) {
+                input += inc();
+            }
+
+            switch(input){
+            case "int":
+                return new token(GrammarToken.INTEGER, input);
+            case "double":
+                return new token(GrammarToken.DOUBLE, input);
+            case "if":
+                return new token(GrammarToken.IF, input);
+            default: 
+                input="";
+            }
+        }
+
         
+
+        if(Character.isDigit(i)){
+            
+            while(Character.isDigit(i)){
+                input += inc();
+            }
+
+            if(top() == '.'){
+                isDouble = true;
+                input += inc();
+                while(Character.isDigit(top())){
+                    input += inc();
+                }
+
+                return new token(GrammarToken.Num_Double, input);
+            }
+            else{
+                return new token(GrammarToken.Num_Int, input);
+            }
+        }
+
+
+        switch(top(){
+            
+        })
         
         
     }

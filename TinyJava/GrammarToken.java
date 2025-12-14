@@ -2,14 +2,17 @@ package TinyJava;
 
 public enum GrammarToken {
     //Variable Types
-    Integer, Double,
+    INTEGER, DOUBLE, 
+    
+    //Numbers
+    Num_Int, Num_Double,
 
     //Arith. Operator
-    Add, Sub, Mult, Div, Mod, Inc, Dec,
+    ADD, SUB, MULT, DIV, MOD, INC, DEC,
 
     //Relational Operator
     ET, NET, LT, GT, LTET, GTET,
 
     //Assignment/if Statements
-    Equal, If
+    EQUAL, IF
 }
