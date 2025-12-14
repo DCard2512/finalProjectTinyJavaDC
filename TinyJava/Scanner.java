@@ -81,6 +81,18 @@ public class Scanner {
                 return new token(GrammarToken.MULT, "*");
             case '/':
                 return new token(GrammarToken.DIV, "/");
+            case '(': 
+                return new token(GrammarToken.LP, "(");
+            case ')': 
+                return new token(GrammarToken.RP, ")");
+            case '{': 
+                return new token(GrammarToken.LB, "{");
+            case '}': 
+                return new token(GrammarToken.RB, "}");
+            case ',': 
+                return new token(GrammarToken.Comma, ",");
+            case ';': 
+                return new token(GrammarToken.Semi, ";");
             case '=':
                 if(top() == '='){
                     inc();
