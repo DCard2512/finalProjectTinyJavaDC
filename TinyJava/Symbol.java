@@ -5,9 +5,9 @@ public class Symbol {
     String name;
 
 
-    public Symbol(String t, String n){
-        type = t;
+    public Symbol(String n, String t){
         name = n;
+        type = t;
     }
 
     public String toString(){
