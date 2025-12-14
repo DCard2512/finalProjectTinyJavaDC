@@ -1,18 +1,24 @@
 package TinyJava;
 
+import java.util.*;
+
 public class Parse {
     
     private Scanner lexScanner;
     private token curr;
     private SymbolTable symbolTable = new SymbolTable();
 
+    private List<String> interCode = new ArrayList<>();
+    private int tempCnt = 0;
+    private int labelCnt = 0;
+
     public Parse(Scanner lexScanner){
         this.lexScanner = lexScanner;
         curr = lexScanner.next();
     }
 
-        //Gets the next grammartoken in line of code
-        private void nextTok(GrammarToken type) {
+    //Gets the next grammartoken in line of code
+    private void nextTok(GrammarToken type) {
         if (curr.type == type) {
             curr = lexScanner.next();
         } 
@@ -29,6 +35,16 @@ public class Parse {
     //Error message for anything wrong 
     private void errorMsg(String msg) {
         throw new RuntimeException("Parse error: " + msg);
+    }
+
+    private String temp(){
+        tempCnt++;
+        return "Temp: " + tempCnt;
+    }
+
+    private String label(){
+        labelCnt++;
+        return "Label: " + labelCnt;
     }
 
 
@@ -91,12 +107,20 @@ public class Parse {
     private void ifParsing() {
         nextTok(GrammarToken.IF);
         nextTok(GrammarToken.LP);
-        addSubParsing();
+
+        String left = addSubParsing();      // now returns place
+        GrammarToken rel = curr.type;       // save operator token
         relationalParsing();
-        addSubParsing();
+        String right = addSubParsing();
+
         nextTok(GrammarToken.RP);
+
+        String L = label();
+        interCode.add("if_false " + left + " " + rel + " " + right + " goto " + L);
+
         statementParsing();
 
+        interCode.add(L + ":");
     }
 
     //Checks the bracket parsing of tokens 
@@ -122,54 +146,101 @@ public class Parse {
 
     //Parsing the assignment type
     private void assignmentParse() {
-        if (symbolTable.find(curr.lex) == null) {
-            System.err.println("Warning: Undeclared variable " + curr.lex);
+        String lhs = curr.lex;
+
+        if (symbolTable.find(lhs) == null) {
+            System.err.println("Warning: Undeclared variable " + lhs);
         }
+
         nextTok(GrammarToken.VAR);
         nextTok(GrammarToken.ASSIGN);
-        addSubParsing();
+
+        String rhs = addSubParsing();   // now returns a place/temp
+
         nextTok(GrammarToken.Semi);
+
+        interCode.add(lhs + " = " + rhs);
     }
 
 
     //Gets the Add and Sub parsing tokens of grammar
-    private void addSubParsing() {
-        multDivParsing();
+    private String addSubParsing() {
+        String left = multDivParsing();
+
         while (curr.type == GrammarToken.ADD || curr.type == GrammarToken.SUB) {
+            GrammarToken op = curr.type;
             nextTok(curr.type);
-            multDivParsing();
+            String right = multDivParsing();
+
+            String t = temp();
+            interCode.add(t + " = " + left + " " + op + " " + right);
+            left = t;
         }
+
+        return left;
     }
 
 
 
     //Gets the multiplication and Division tokens for parsing
-    private void multDivParsing() {
-        numParsing();
-        while (curr.type == GrammarToken.MULT || curr.type == GrammarToken.DIV) {
+    private String multDivParsing() {
+        String left = numParsing();
+
+        while (curr.type == GrammarToken.MULT || curr.type == GrammarToken.DIV || curr.type == GrammarToken.MOD) {
+            GrammarToken op = curr.type;
             nextTok(curr.type);
-            numParsing();
+            String right = numParsing();
+
+            String t = temp();
+            interCode.add(t + " = " + left + " " + op + " " + right);
+            left = t;
         }
+
+        return left;
     }
 
 
 
     //Gets the number of a variable for parsing if Int or Double
-    private void numParsing() {
+    private String numParsing() {
         switch (curr.type) {
-            case Num_Int:
-                nextTok(GrammarToken.Num_Int);
-                break;
-            case Num_Double:
-                nextTok(GrammarToken.Num_Double);
-                break;
-            case LP:
-                nextTok(GrammarToken.LP);
-                addSubParsing();
-                nextTok(GrammarToken.RP);
-                break;
-            default:
-                errorMsg("Invalid expression");
+
+        case VAR: {
+            String v = curr.lex;
+            nextTok(GrammarToken.VAR);
+            return v;
+        }
+
+        case Num_Int: {
+            String v = curr.lex;
+            nextTok(GrammarToken.Num_Int);
+            return v;
+        }
+
+        case Num_Double: {
+            String v = curr.lex;
+            nextTok(GrammarToken.Num_Double);
+            return v;
+        }
+
+        case LP: {
+            nextTok(GrammarToken.LP);
+            String inside = addSubParsing();
+            nextTok(GrammarToken.RP);
+            return inside;
+        }
+
+        default:
+            errorMsg("Invalid expression");
+            return ""; 
+        }
+    }
+
+
+    public void printInterCode(){
+        System.out.println("\nIntermediate Code: ");
+        for(String s: interCode){
+            System.out.println(s);
         }
     }
 

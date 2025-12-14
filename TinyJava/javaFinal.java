@@ -15,17 +15,35 @@ public class javaFinal {
 
         """;
 
-        System.out.println("Token");
-        Scanner tokScanner = new Scanner(program);
+        Scanner s1 = new Scanner(program);
         token t;
+
         do {
-            t = tokScanner.next();
-            System.out.println(t);
+            t = s1.next();
+            System.out.println(t.type + ": " + t.lex);
         } while (t.type != GrammarToken.ENDOFFILE);
 
-        System.out.println("\nParse Output");
-        Scanner parseScanner = new Scanner(program);
-        Parse parser = new Parse(parseScanner);
-        parser.parsingFile();
+        Scanner s2 = new Scanner(program);
+        Parse p = new Parse(s2);
+
+        try {
+            p.parsingFile();
+
+           
+            System.out.println(p.toString());
+
+     
+            p.printInterCode();
+
+
+        } catch (RuntimeException e) {
+            System.out.println("Parsing failed: " + e.getMessage());
+
+          
+            System.out.println(p.toString());
+
+            System.out.println("\nIntermediate Code so far:");
+            p.printInterCode();
+        }
     }
 }

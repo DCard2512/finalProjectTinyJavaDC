@@ -83,11 +83,13 @@ public class Scanner {
             case '+':
                 return new token(GrammarToken.ADD, "+");
             case '-':
-                return new token(GrammarToken.SUB, "+");
+                return new token(GrammarToken.SUB, "-");
             case '*':
                 return new token(GrammarToken.MULT, "*");
             case '/':
                 return new token(GrammarToken.DIV, "/");
+            case '%':
+                return new token(GrammarToken.MOD, "%");
             case '(': 
                 return new token(GrammarToken.LP, "(");
             case ')': 
@@ -105,6 +107,7 @@ public class Scanner {
                     inc();
                     return new token(GrammarToken.EQUAL, "==");
                 }
+                return new token(GrammarToken.ASSIGN, "=");
             case '!':
                 if (top() == '=') {
                     inc();
