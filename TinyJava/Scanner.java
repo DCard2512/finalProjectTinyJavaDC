@@ -5,13 +5,11 @@ public class Scanner {
     private String in;
     private int position = 0;
     
+    //
     public Scanner(String in) {
         this.in = in;
     }
 
-    public String toString(){
-        return "Input: " + in + ", position: " + position;
-    }
 
     private char top(){
         if(position > in.length())
@@ -29,11 +27,18 @@ public class Scanner {
             inc();
     }
 
+    //Gets token depending on the grammar
     public token next(){
         String input = "";
         char i = top();
         incWhiteSpace();
+
+
+
+        //Used if text is String
         if(Character.isLetter(i)){
+
+            //Checks if digit for Variable type 
             while (Character.isLetterOrDigit(top())) {
                 input += inc();
             }
@@ -51,7 +56,7 @@ public class Scanner {
         }
 
         
-
+        //If digit then checks if Interger or Double Numbers
         if(Character.isDigit(i)){
             
             while(Character.isDigit(i)){
@@ -72,6 +77,8 @@ public class Scanner {
         }
 
         input = "";
+
+        //Gets the Arith and Relational Operators 
         switch(inc()){
             case '+':
                 return new token(GrammarToken.ADD, "+");
@@ -117,7 +124,13 @@ public class Scanner {
                 }
                 return new token(GrammarToken.GT, ">");
         }
+        throw new RuntimeException("Not valid" + i);
+    }
 
-        throw new RuntimeException("Not valid");
+
+
+    //String output
+    public String toString(){
+        return "Input: " + in + ", position: " + position;
     }
 }

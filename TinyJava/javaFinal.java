@@ -4,27 +4,28 @@ public class javaFinal {
     public static void main(String[] args) {
 
         String program = """
-            int x, y;
-            double z;
+            int y;
+            double x;
 
-            x = 3 + 5 * 2;
+            y = 12 % 3;
+            x = 5 * 4;
 
-            if (x < 20) {
-                z = x * 1.0;
-            }
+            if( x == y)
+            x = 5 * y;
+
         """;
 
-        System.out.println("=== TOKEN TRAIN ===");
-        Scanner lexer1 = new Scanner(program);
+        System.out.println("Token");
+        Scanner tokScanner = new Scanner(program);
         token t;
         do {
-            t = lexer1.next();
+            t = tokScanner.next();
             System.out.println(t);
         } while (t.type != GrammarToken.ENDOFFILE);
 
-        System.out.println("\n=== PARSER OUTPUT ===");
-        Scanner lexer2 = new Scanner(program);
-        Parse parser = new Parse(lexer2);
-        parser.parseProgram();
+        System.out.println("\nParse Output");
+        Scanner parseScanner = new Scanner(program);
+        Parse parser = new Parse(parseScanner);
+        parser.parsingFile();
     }
 }

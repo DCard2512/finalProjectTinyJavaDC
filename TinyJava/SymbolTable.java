@@ -7,9 +7,12 @@ import java.util.Map;
 public class SymbolTable {
     private Map<String,Symbol> table = new HashMap();
 
+    //Hashmap used for key and value of type and name 
     public void insert(String type, String name){
         table.put(name, new Symbol(name, type));
     }
+
+    //Finds the key value "name" in our symbol table 
     public Symbol find(String name){
         return table.get(name);
     }

@@ -11,6 +11,7 @@ public class Parse {
         curr = lexScanner.next();
     }
 
+        //Gets the next grammartoken in line of code
         private void nextTok(GrammarToken type) {
         if (curr.type == type) {
             curr = lexScanner.next();
@@ -19,114 +20,142 @@ public class Parse {
             lexScanner.next();
         }
         else {
-            error("Expected " + type + ", found " + curr.type);
+            errorMsg("Expected '" + type + "', but found '" + curr.type + "' (" + curr.lex + ")");
+
         }
     }
 
-    private void error(String msg) {
+
+    //Error message for anything wrong 
+    private void errorMsg(String msg) {
         throw new RuntimeException("Parse error: " + msg);
     }
 
-    public void parseProgram() {
+
+    //Gets the end of file for GrammarToken of tokens
+    public void parsingFile() {
         while (curr.type != GrammarToken.ENDOFFILE) {
-            parseDeclOrStmt();
+            typeParse();
         }
         symbolTable.toString();
         System.out.println("\nParsing completed successfully.");
     }
 
-    private void parseDeclOrStmt() {
-        if (curr.type == GrammarToken.INTEGER || curr.type == GrammarToken.DOUBLE) {
-            parseVarDecl();
-        } else {
-            parseStmt();
-        }
-    }
-
-    private void parseVarDecl() {
+    //Parse for the variables within lines of code
+    private void varParse() {
         String type = curr.lex;
         nextTok(curr.type);
 
         symbolTable.insert(curr.lex, type);
-        nextTok(GrammarToken.Indent);
+        nextTok(GrammarToken.VAR);
 
         while (curr.type == GrammarToken.Comma) {
             nextTok(GrammarToken.Comma);
             symbolTable.insert(curr.lex, type);
-            nextTok(GrammarToken.Indent);
+            nextTok(GrammarToken.VAR);
         }
 
         nextTok(GrammarToken.Semi);
     }
 
-    private void parseStmt() {
-        if (curr.type == GrammarToken.Indent) {
-            parseAssign();
-        } else if (curr.type == GrammarToken.IF) {
-            parseIf();
-        } else if (curr.type == GrammarToken.LB) {
-            parseBlock();
+
+    //Checks the type of the variable
+    private void typeParse() {
+        if (curr.type == GrammarToken.INTEGER || curr.type == GrammarToken.DOUBLE) {
+            varParse();
         } else {
-            error("Invalid statement");
+            statementParsing();
         }
     }
 
-    private void parseAssign() {
-        if (symbolTable.find(curr.lex) == null) {
-            System.err.println("Warning: Undeclared variable " + curr.lex);
+    
+
+    //Statement parsing of 
+    private void statementParsing() {
+        if (curr.type == GrammarToken.VAR) {
+            assignmentParse();
+        } else if (curr.type == GrammarToken.IF) {
+            ifParsing();
+        } else if (curr.type == GrammarToken.LB) {
+            brackParse();
+        } else {
+            errorMsg("Invalid typeParse");
         }
-        nextTok(GrammarToken.Indent);
-        nextTok(GrammarToken.ASSIGN);
-        parseExpr();
-        nextTok(GrammarToken.Semi);
     }
 
-    private void parseIf() {
+
+    
+
+
+    //Parses for the if statements
+    private void ifParsing() {
         nextTok(GrammarToken.IF);
         nextTok(GrammarToken.LP);
-        parseExpr();
-        parseRelOp();
-        parseExpr();
+        addSubParsing();
+        relationalParsing();
+        addSubParsing();
         nextTok(GrammarToken.RP);
-        parseStmt();
+        statementParsing();
 
     }
 
-    private void parseBlock() {
+    //Checks the bracket parsing of tokens 
+    private void brackParse() {
         nextTok(GrammarToken.LB);
         while (curr.type != GrammarToken.RB) {
-            parseDeclOrStmt();
+            typeParse();
         }
         nextTok(GrammarToken.RB);
     }
 
-    private void parseRelOp() {
+
+    //Checks for relational tokens
+    private void relationalParsing() {
         switch (curr.type) {
             case ET: case NET: case LT: case LTET: case GT: case GTET:
                 nextTok(curr.type);
                 break;
             default:
-                error("Expected relational operator");
+                errorMsg("Expected relational operator");
         }
     }
 
-    private void parseExpr() {
-        parseTerm();
+    //Parsing the assignment type
+    private void assignmentParse() {
+        if (symbolTable.find(curr.lex) == null) {
+            System.err.println("Warning: Undeclared variable " + curr.lex);
+        }
+        nextTok(GrammarToken.VAR);
+        nextTok(GrammarToken.ASSIGN);
+        addSubParsing();
+        nextTok(GrammarToken.Semi);
+    }
+
+
+    //Gets the Add and Sub parsing tokens of grammar
+    private void addSubParsing() {
+        multDivParsing();
         while (curr.type == GrammarToken.ADD || curr.type == GrammarToken.SUB) {
             nextTok(curr.type);
-            parseTerm();
+            multDivParsing();
         }
     }
 
-    private void parseTerm() {
-        parseFactor();
+
+
+    //Gets the multiplication and Division tokens for parsing
+    private void multDivParsing() {
+        numParsing();
         while (curr.type == GrammarToken.MULT || curr.type == GrammarToken.DIV) {
             nextTok(curr.type);
-            parseFactor();
+            numParsing();
         }
     }
 
-    private void parseFactor() {
+
+
+    //Gets the number of a variable for parsing if Int or Double
+    private void numParsing() {
         switch (curr.type) {
             case Num_Int:
                 nextTok(GrammarToken.Num_Int);
@@ -136,11 +165,11 @@ public class Parse {
                 break;
             case LP:
                 nextTok(GrammarToken.LP);
-                parseExpr();
+                addSubParsing();
                 nextTok(GrammarToken.RP);
                 break;
             default:
-                error("Invalid expression");
+                errorMsg("Invalid expression");
         }
     }
 

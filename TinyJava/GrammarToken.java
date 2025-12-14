@@ -5,7 +5,7 @@ public enum GrammarToken {
     INTEGER, DOUBLE, 
     
     //Numbers
-    Num_Int, Num_Double,
+    Num_Int, Num_Double, VAR,
 
     //Arith. Operator
     ADD, SUB, MULT, DIV, MOD, INC, DEC,
@@ -16,9 +16,8 @@ public enum GrammarToken {
     //Assignment/if Statements
     EQUAL, IF, ASSIGN,
 
-
-    //Ignore
-    Comma, Semi, LP, RP, LB, RB, Indent,
+    //Other
+    Comma, Semi, LP, RP, LB, RB,
 
     ENDOFFILE
 }
